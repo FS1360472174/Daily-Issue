@@ -1,0 +1,48 @@
+**Cause**
+1.ConcurrentLinkQueue 的remove 方法有问题
+remove方法只是将queue中的值设为null了,而并没有将他从queue中移除导致了出现了问题
+
+**Resolve**
+old:
+          public boolean remove(Object o) {
+                  if (o == null) return false;
+                  Node<E> pred = null;
+                  for (Node<E> p = first(); p != null; p = succ(p)) {
+                      E item = p.item;
+                      if (item != null &&
+                          o.equals(item) &&
+                          p.casItem(item, null)) {
+                          Node<E> next = succ(p);
+                          if (pred != null && next != null)
+                              pred.casNext(p, next);
+                          return true;
+                      }
+                      pred = p;
+                  }
+                  return false;
+              }
+              
+              
+new:
+  public boolean remove(Object o) {
+        if (o != null) {
+            Node<E> next, pred = null;
+            for (Node<E> p = first(); p != null; pred = p, p = next) {
+                boolean removed = false;
+                next = succ(p);
+                E item = p.item;
+                if (item != null) {
+                    if (!o.equals(item))
+                        continue;
+                    removed = casItem(p, item, null);
+                }
+
+                // unlink
+                if (pred != null && next != null)
+                    casNext(pred, p, next);
+                if (removed)
+                    return true;
+            }
+        }
+        return false;
+    }
