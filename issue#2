@@ -1,8 +1,9 @@
-**Cause**
+***Cause***
 1.ConcurrentLinkQueue 的remove 方法有问题
 remove方法只是将queue中的值设为null了,而并没有将他从queue中移除导致了出现了问题
 
-**Resolve**
+***JDK Resolve***
+https://bugs.openjdk.java.net/browse/JDK-8054446
 old:
           public boolean remove(Object o) {
                   if (o == null) return false;
@@ -46,3 +47,12 @@ new:
         }
         return false;
     }
+
+
+***cassandra resolve****
+这个bug jdk修复版本是在jdk9中
+cassanda 自己修复了一个版本
+org.apache.cassandra.utils.concurrent.Ref
+         #private final ConcurrentLinkedQueue<State> locallyExtant = new ConcurrentLinkedQueue<>();
+         private final Collection<State> locallyExtant = new ConcurrentLinkedDeque<>();
+就是将ConcurrentLinkedQueue类变成了ConcurrentLinkedDeque
