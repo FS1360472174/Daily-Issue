@@ -56,3 +56,17 @@ org.apache.cassandra.utils.concurrent.Ref
          #private final ConcurrentLinkedQueue<State> locallyExtant = new ConcurrentLinkedQueue<>();
          private final Collection<State> locallyExtant = new ConcurrentLinkedDeque<>();
 就是将ConcurrentLinkedQueue类变成了ConcurrentLinkedDeque
+
+**another**
+open this ticket https://issues.apache.org/jira/browse/CASSANDRA-11460
+这里遇到的问题和上面提到的修复的问题不是同一个问题
+Summary:
+out-of-memory caused by ConcurrentLinkedQueue,i think it is duplicate with bugCASSANDRA-9549,now I understand I make a mistake.
+Cassandra9549 caused by Ref.class,and resolved.
+my issue caused by SEPExecutor.class
+protected final ConcurrentLinkedQueue> tasks = new ConcurrentLinkedQueue<>();
+
+I just see tasks.add method,but not remove operation,so is this one of the reason?
+
+ConcurrentLinkedQueue is non-blocking,and due to my poor cassandra cluster environment.
+if it cannot consume as fast as produce,it will also increase and then Out-of-Memory.is that right?
