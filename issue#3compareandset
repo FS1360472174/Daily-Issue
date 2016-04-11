@@ -1,0 +1,33 @@
+compare and set
+在赋值之前先比较。
+
+**意义**
+多线程环境下，对一个共享变量进行操作，有可能在赋值之前
+值已经被其他线程改变，而通过锁来控制，太耗费资源。所以应用compare and set
+
+**应用**
+大部分java.util.concurrent.atomic 包中的类都使用CAS 实现
+eg.Integer
+public final int getAndSet(int newValue){  
+    for (;;) {  
+        int current = get();  
+        if (compareAndSet(current, newValue))  
+            return current;  
+    }  
+}  
+
+compareAndSet
+调用UnSafe 类
+public final boolean compareAndSet(int expect, int update) {  
+    return unsafe.compareAndSwapInt(this, valueOffset, expect, update);  
+}
+通过JNI调用操作系统程序实现
+public final native boolean compareAndSwapInt(Object o, long offset,
+                                                 int x);
+原子性通过cpu来实现
+
+**缺点**
+这个存在本质上缺陷，即判断值有没改变，通过比较值是否相等。
+这个标准有问题。因为多个线程可以做不同的操作，
+比如a=3,thread1 将a=4.thread2 将a=3.这时候通过CAS 判断a值没有改变。
+就是有问题的
