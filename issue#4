@@ -1,0 +1,5 @@
+graphite 可以与很多第三方的插件集成
+
+statsd ：作为收集缓存
+collectd:安装在各个节点上，收集OS metrics
+carbon-aggreator: 聚合metrics
