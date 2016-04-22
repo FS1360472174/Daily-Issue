@@ -70,3 +70,8 @@ I just see tasks.add method,but not remove operation,so is this one of the reaso
 
 ConcurrentLinkedQueue is non-blocking,and due to my poor cassandra cluster environment.
 if it cannot consume as fast as produce,it will also increase and then Out-of-Memory.is that right?
+
+SEPExecutor:
+    // producers wait on this when there is no room on the queue
+    private final WaitQueue hasRoom = new WaitQueue();
+也就是说虽然ConcurrentLinkedQueue 没有设置Queue的大小，但是有额外的判断
